@@ -1,0 +1,66 @@
+from datetime import datetime, timedelta
+
+class ControlAcceso:
+    def __init__(self):
+        # Diccionario para bloquear IDs temporalmente
+        # {id_cliente: tiempo_desbloqueo}
+        self.bloqueados = {}
+
+    #  Verifica si el cliente existe
+    def verificar_existencia_cliente(self, cliente):
+        return cliente is not None
+
+    #  Calcula días restantes de la membresía
+    def calcular_dias_restantes(self, cliente):
+        hoy = datetime.now().date()
+        fecha_fin = datetime.strptime(cliente.fecha_fin, "%Y-%m-%d").date()
+        return (fecha_fin - hoy).days
+
+    # Verifica estado de la membresía
+    def verificar_estado_membresia(self, cliente):
+        dias = self.calcular_dias_restantes(cliente)
+
+        if dias < 0:
+            return "vencida"
+        elif dias <= 3:
+            return "por_vencer"
+        else:
+            return "vigente"
+
+    #  Verifica si el cliente está bloqueado
+    def esta_bloqueado(self, id_cliente):
+        if id_cliente in self.bloqueados:
+            if datetime.now() < self.bloqueados[id_cliente]:
+                return True
+            else:
+                # Se desbloquea automáticamente
+                del self.bloqueados[id_cliente]
+        return False
+
+    #  Bloquea cliente por 1 minuto
+    def bloquear_cliente(self, id_cliente):
+        self.bloqueados[id_cliente] = datetime.now() + timedelta(minutes=1)
+
+    #  Función principal para validar acceso
+    def validar_acceso(self, cliente):
+        # 1. Verificar existencia
+        if not self.verificar_existencia_cliente(cliente):
+            return " Cliente no existe"
+
+        # 2. Verificar bloqueo
+        if self.esta_bloqueado(cliente.id):
+            return " Acceso bloqueado (espere 1 minuto)"
+
+        # 3. Verificar estado de membresía
+        estado = self.verificar_estado_membresia(cliente)
+
+        if estado == "vencida":
+            return " Acceso denegado (membresía vencida)"
+
+        elif estado == "por_vencer":
+            self.bloquear_cliente(cliente.id)
+            return "Acceso permitido (membresía por vencer)"
+
+        else:
+            self.bloquear_cliente(cliente.id)
+            return " Acceso permitido"
