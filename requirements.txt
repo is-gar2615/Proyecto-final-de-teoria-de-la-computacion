@@ -1,0 +1,18 @@
+
+# Interfaz gráfica (ya viene incluido con Python, se incluye por claridad)
+tkinter
+
+# Manejo de imágenes (requiere instalación)
+Pillow==10.1.0
+
+# Multimedia para música y sonidos (requiere instalación)
+pygame==2.5.2
+
+# Base de datos (sqlite3 viene incluido con Python)
+sqlite3
+
+# Fechas (datetime viene incluido con Python)
+datetime
+
+# CSV (csv viene incluido con Python)
+csv
